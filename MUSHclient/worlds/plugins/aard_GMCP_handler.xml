@@ -106,7 +106,63 @@ function GMCP_Alias(name, line, wildcards)
       Send_GMCP_Packet(wildcards[1]) -- in gmcphelper
    end
 end 
- 
+
+---------------------------------------------------------------------------------------------------
+-- alternative to gmcpval function, intended to be used from within plugins written
+-- in other languages than LUA (CallPlugin function can return the serialized value
+-- only in LUA).
+--
+-- Usage example (perlscript):
+--
+-- use Win32::OLE qw(in with);
+-- use JSON;
+-- use constant GMCP_ID => "3e7dedbe37e44942dd46d264";
+--
+-- sub gmcp_get_tree($;) {
+--   my ($tree) = @_;
+--   my $err_code = $main::world->CallPlugin(GMCP_ID, "gmcp_export", qq#{ "tree": "$tree", "export": "perl_export"}#);
+--   if ($err_code != 0) {
+--     die("cannot query gmcp: " . $err_code); // throw
+--   }
+--   my $text = $main::world->GetPluginVariable(GMCP_ID, "perl_export");
+--   return decode_json($text);
+-- }
+-- sub OnPluginBroadcast() {
+--  my $id = (Win32::OLE::in($_[1]))[0];
+--  my $category = (Win32::OLE::in($_[3]))[0];
+--  if ($id == GMCP_ID && $category eq "char.status") {
+--   eval {    // try
+--     my $obj = gmcp_get_tree("char.status");
+--     $main::world->Note("GMCP says that you are level " . $obj->{'level'});
+--   } or do { // catch
+--     $main::world->Note($@);
+--   }
+-- }
+---------------------------------------------------------------------------------------------------
+function gmcp_export_core(request)
+  -- Note("gmcp_export called: " .. request)
+  request = json.decode(request)
+  -- Note("gmcp_export decoded: " .. request.tree .. "," .. request.export)
+  val = gmcpval(request.tree)
+  val = "val = " .. val
+  assert (loadstring (val or "")) ()
+  if val ~= nil then
+    val = json.encode(val)
+    -- Note("exporting data: " .. val)
+    SetVariable(request.export, val);
+  else
+    SetVariable(request.export, "null")
+  end
+  -- Note("exporting data: success");
+end
+
+function gmcp_export(request)
+  local status, err = pcall(gmcp_export_core, request)
+  if not status then
+    Note("gmcp_export call failed: " .. err)
+  end
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Mushclient callback function when telnet SB data received.
 ---------------------------------------------------------------------------------------------------
@@ -183,6 +239,14 @@ end
 
 function OnPluginSaveState()
    SetVariable("GMCPDebug", GMCPDebug)
+   -- json-encoded  strings  sometimes  contain   strange  binary  stuff  that
+   -- mushclient doesn't save correctly to xml (like ANSI color codes). Let's
+   -- clear them before saving (or is there a way to UNSET the variable?)
+   for k, v in pairs (GetVariableList()) do
+      if k ~= "GMCPDebug" then
+         DeleteVariable(k)
+      end
+   end
 end
 
 function OnPluginTelnetRequest (msg_type, data)
