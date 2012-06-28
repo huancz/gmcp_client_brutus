@@ -268,16 +268,16 @@ end -- function OnPluginTelnetRequest
 function PackageVersion()
    local ret = "unknown"
    -- borrowed from the package update checker
-   version_file,err = io.open ("AardwolfPackageChanges.txt", "r")
-   if version_file then -- the file exists
-      --- read the snapshot revision from the third line
-      line = version_file:read ("*l") -- read one line
-      line = version_file:read ("*l") -- read one line
-      line = version_file:read ("*l") -- read one line
-      if line then -- if we got something
-         ret = string.match(line, "(r%d+)") or "unknown"
-      end
-   end
+   -- version_file,err = io.open ("AardwolfPackageChanges.txt", "r")
+   -- if version_file then -- the file exists
+   --    --- read the snapshot revision from the third line
+   --    line = version_file:read ("*l") -- read one line
+   --    line = version_file:read ("*l") -- read one line
+   --    line = version_file:read ("*l") -- read one line
+   --    if line then -- if we got something
+   --       ret = string.match(line, "(r%d+)") or "unknown"
+   --    end
+   -- end
    return ret
 end
 
