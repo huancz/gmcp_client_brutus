@@ -2398,91 +2398,92 @@ function checkDatabaseIntegrity()
 end
 
 function backup_databases(manual)
-   in_backup = true
-   local success = false
-   Note("PERFORMING "..((manual and "MANUAL") or "AUTOMATIC").." DATABASE BACKUP. DON'T TOUCH ANYTHING!")
-   if not checkDatabaseIntegrity() then
-      Note("ABORTING CURRENT BACKUP")
-      Note("")
-      Repaint()   
-      db = assert (sqlite3.open(worldPath..".db")) -- try to re-open the database anyway
-      in_backup = false
-      CorruptionAlert()
-      return
-   end
-   Note("BACKING UP DATABASE")
-   Repaint()
-   
-   backupPath = GetInfo(66).."db_backups\\"..sanitize_filename(WorldName())
-   firstBackup = backupPath..".db.Backup"
-   
-   local ffi = require("ffi")
-   ffi.cdef[[
-   bool CreateDirectoryA(const char *lpPathName, void *lpSecurityAttributes);
-   bool CopyFileA(const char* lpExistingFileName, const char * lpNewFileName, bool bFailIfExists);
-   unsigned long GetLastError(void);
-   ]]
-   
-   succ = ffi.C.CreateDirectoryA(GetInfo(66).."db_backups\\", nil)
-   err_no = ffi.C.GetLastError()
-   if succ == false and err_no ~= 183 and err_no ~= 127 then
-      -- error
-      ColourNote("yellow","red", "ERROR ("..err_no..") trying to CreateDirectory: "..GetInfo(66).."db_backups\\\n")
-   else 
-      -- successfully created the backup directory
-      db:close() -- always close the database before copying
-      
-      -- make new backup
-      if use_compression == 1 then
+   ColourNote("red", "", "Automatic backups are disabled in this experimental version, you would need to grand file IO privileges in your LUA sandbox");
+   -- in_backup = true
+   -- local success = false
+   -- Note("PERFORMING "..((manual and "MANUAL") or "AUTOMATIC").." DATABASE BACKUP. DON'T TOUCH ANYTHING!")
+   -- if not checkDatabaseIntegrity() then
+   --    Note("ABORTING CURRENT BACKUP")
+   --    Note("")
+   --    Repaint()   
+   --    db = assert (sqlite3.open(worldPath..".db")) -- try to re-open the database anyway
+   --    in_backup = false
+   --    CorruptionAlert()
+   --    return
+   -- end
+   -- Note("BACKING UP DATABASE")
+   -- Repaint()
+   -- 
+   -- backupPath = GetInfo(66).."db_backups\\"..sanitize_filename(WorldName())
+   -- firstBackup = backupPath..".db.Backup"
+   -- 
+   -- local ffi = require("ffi")
+   -- ffi.cdef[[
+   -- bool CreateDirectoryA(const char *lpPathName, void *lpSecurityAttributes);
+   -- bool CopyFileA(const char* lpExistingFileName, const char * lpNewFileName, bool bFailIfExists);
+   -- unsigned long GetLastError(void);
+   -- ]]
+   -- 
+   -- succ = ffi.C.CreateDirectoryA(GetInfo(66).."db_backups\\", nil)
+   -- err_no = ffi.C.GetLastError()
+   -- if succ == false and err_no ~= 183 and err_no ~= 127 then
+   --    -- error
+   --    ColourNote("yellow","red", "ERROR ("..err_no..") trying to CreateDirectory: "..GetInfo(66).."db_backups\\\n")
+   -- else 
+   --    -- successfully created the backup directory
+   --    db:close() -- always close the database before copying
+   --    
+   --    -- make new backup
+   --    if use_compression == 1 then
 
-         -- use pushd/popd here because cd can't @!#($$# access UNC directory paths
-         local n = GetInfo(66).."aard_package_temp_file.txt" -- temp file for catching os.execute output
-         local execute_string = "pushd "..quote(GetInfo(66)).." & zip -j -v -T "..quote(firstBackup..".zip").." "..quote(worldPath..".db").." >"..quote(n).." 2>&1 & popd"
-         os.execute(execute_string)
-         -- It's not so simple to catch errors from os.execute, so just display the system output here
-         local lines = {}
-         for line in io.lines (n) do
-            table.insert(lines,line)
-         end
-         os.remove (n) -- remove temp file
+   --       -- use pushd/popd here because cd can't @!#($$# access UNC directory paths
+   --       local n = GetInfo(66).."aard_package_temp_file.txt" -- temp file for catching os.execute output
+   --       local execute_string = "pushd "..quote(GetInfo(66)).." & zip -j -v -T "..quote(firstBackup..".zip").." "..quote(worldPath..".db").." >"..quote(n).." 2>&1 & popd"
+   --       os.execute(execute_string)
+   --       -- It's not so simple to catch errors from os.execute, so just display the system output here
+   --       local lines = {}
+   --       for line in io.lines (n) do
+   --          table.insert(lines,line)
+   --       end
+   --       os.remove (n) -- remove temp file
 
-         if not lines[#lines] or not string.find(lines[#lines], "zip OK") then
-            -- something went wrong with the compression
-            -- we expect to see some lines with the last line showing a passing test
-            ColourNote("yellow","red", "ERROR executing system command: "..execute_string.."\n")
-            for i,v in ipairs(lines) do
-               ColourNote("yellow","red",v) -- flaming output
-            end
-            -- failure
-         else
-            for i,v in ipairs(lines) do
-               Note(v) -- less intense output
-            end
-            success = true
-         end
-      else 
-         -- no compression, just copy
-         succ = ffi.C.CopyFileA(worldPath..".db", firstBackup, false)
-         err_no = ffi.C.GetLastError()
-         if succ == false then
-            ColourNote("yellow","red", "ERROR ("..err_no..") trying to copy database from '"..worldPath..".db' to '"..firstBackup.."'")
-         else
-            success = true
-         end
-      end
-   end
-   
-   if success then
-      rotate_backups(manual) -- rotate backup folders (obviously)
-      Note("FINISHED DATABASE BACKUP. YOU MAY NOW GO BACK TO MUDDING.")
-   else
-      Note("ABORTING BACKUP.")
-      CorruptionAlert()
-   end
-   Note("")
-   db = assert (sqlite3.open(worldPath..".db")) -- re-open database 
-   Repaint()
-   in_backup = false
+   --       if not lines[#lines] or not string.find(lines[#lines], "zip OK") then
+   --          -- something went wrong with the compression
+   --          -- we expect to see some lines with the last line showing a passing test
+   --          ColourNote("yellow","red", "ERROR executing system command: "..execute_string.."\n")
+   --          for i,v in ipairs(lines) do
+   --             ColourNote("yellow","red",v) -- flaming output
+   --          end
+   --          -- failure
+   --       else
+   --          for i,v in ipairs(lines) do
+   --             Note(v) -- less intense output
+   --          end
+   --          success = true
+   --       end
+   --    else 
+   --       -- no compression, just copy
+   --       succ = ffi.C.CopyFileA(worldPath..".db", firstBackup, false)
+   --       err_no = ffi.C.GetLastError()
+   --       if succ == false then
+   --          ColourNote("yellow","red", "ERROR ("..err_no..") trying to copy database from '"..worldPath..".db' to '"..firstBackup.."'")
+   --       else
+   --          success = true
+   --       end
+   --    end
+   -- end
+   -- 
+   -- if success then
+   --    rotate_backups(manual) -- rotate backup folders (obviously)
+   --    Note("FINISHED DATABASE BACKUP. YOU MAY NOW GO BACK TO MUDDING.")
+   -- else
+   --    Note("ABORTING BACKUP.")
+   --    CorruptionAlert()
+   -- end
+   -- Note("")
+   -- db = assert (sqlite3.open(worldPath..".db")) -- re-open database 
+   -- Repaint()
+   -- in_backup = false
 end
 
 function CorruptionAlert()
@@ -2537,7 +2538,6 @@ function fix_exits_table()
 end
 
 function OnPluginInstall ()
-  
    configs = {}  -- in case not found
 
    fonts = utils.getfontfamilies ()
@@ -2653,41 +2653,41 @@ function OnPluginInstall ()
    -- update db version
    dbCheckExecute("PRAGMA user_version = 8;")
    
-   b_b, err, erm = io.open(worldPath.."_bookmarks.db", "r")
-   if b_b ~= nil then
-      io.close(b_b)
-      ColourNote("white", "blue", "Found obsolete bookmarks file "..sanitize_filename(WorldName()).."_bookmarks.db.")
-      ColourNote("white", "blue", "Merging into the main database file.")
-      ColourNote("white", "blue", sanitize_filename(WorldName()).."_bookmarks.db --> "..sanitize_filename(WorldName())..".db")
-      db_bm = assert (sqlite3.open(worldPath.."_bookmarks.db"))
+   -- b_b, err, erm = io.open(worldPath.."_bookmarks.db", "r")
+   -- if b_b ~= nil then
+   --    io.close(b_b)
+   --    ColourNote("white", "blue", "Found obsolete bookmarks file "..sanitize_filename(WorldName()).."_bookmarks.db.")
+   --    ColourNote("white", "blue", "Merging into the main database file.")
+   --    ColourNote("white", "blue", sanitize_filename(WorldName()).."_bookmarks.db --> "..sanitize_filename(WorldName())..".db")
+   --    db_bm = assert (sqlite3.open(worldPath.."_bookmarks.db"))
 
-      local bm_found = false
-      for row in db_bm:nrows("SELECT name FROM sqlite_master WHERE type='table' AND name='bookmarks';") do
-         bm_found = true
-      end
-      local tr_found = false
-      for row in db_bm:nrows("SELECT name FROM sqlite_master WHERE type='table' AND name='terrain';") do
-         tr_found = true
-      end
-      if bm_found then
-         for row in db_bm:nrows("SELECT * FROM bookmarks;") do
-            dbCheckExecute(string.format("INSERT OR REPLACE INTO bookmarks (uid, notes, date_added) VALUES (%s, %s, DATETIME('NOW'));",
-            fixsql(row.uid),fixsql(row.notes)))
-         end
-      end
-      if tr_found then
-         for row in db_bm:nrows("SELECT * FROM terrain;") do
-            dbCheckExecute(string.format("INSERT OR REPLACE INTO terrain (name, color, date_added) VALUES (%s, %i, DATETIME('NOW'));",
-            fixsql(row.name),row.color))
-         end
-      end
-      
-      db_bm:close()
-      ok, err = os.remove(worldPath.."_bookmarks.db")
-      if not ok then
-         ColourNote("white","red", "Error trying to delete obsolete file: "..worldPath.."_bookmarks.db. Please delete it manually.")
-      end
-   end
+   --    local bm_found = false
+   --    for row in db_bm:nrows("SELECT name FROM sqlite_master WHERE type='table' AND name='bookmarks';") do
+   --       bm_found = true
+   --    end
+   --    local tr_found = false
+   --    for row in db_bm:nrows("SELECT name FROM sqlite_master WHERE type='table' AND name='terrain';") do
+   --       tr_found = true
+   --    end
+   --    if bm_found then
+   --       for row in db_bm:nrows("SELECT * FROM bookmarks;") do
+   --          dbCheckExecute(string.format("INSERT OR REPLACE INTO bookmarks (uid, notes, date_added) VALUES (%s, %s, DATETIME('NOW'));",
+   --          fixsql(row.uid),fixsql(row.notes)))
+   --       end
+   --    end
+   --    if tr_found then
+   --       for row in db_bm:nrows("SELECT * FROM terrain;") do
+   --          dbCheckExecute(string.format("INSERT OR REPLACE INTO terrain (name, color, date_added) VALUES (%s, %i, DATETIME('NOW'));",
+   --          fixsql(row.name),row.color))
+   --       end
+   --    end
+   --    
+   --    db_bm:close()
+   --    ok, err = os.remove(worldPath.."_bookmarks.db")
+   --    if not ok then
+   --       ColourNote("white","red", "Error trying to delete obsolete file: "..worldPath.."_bookmarks.db. Please delete it manually.")
+   --    end
+   -- end
 
    -- grab all area names
    for row in db:nrows("SELECT * FROM areas") do
