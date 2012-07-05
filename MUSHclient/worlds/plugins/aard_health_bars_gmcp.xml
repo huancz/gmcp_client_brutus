@@ -285,8 +285,8 @@ function DisplayStatsPage()
       if (showBar[bar][2] == true) then
          alignment = tonumber(gmcpval("status.align"))
          if alignment ~= nil then
-            zeroed_alignment = alignment+2500
-            bar_colour = ((zeroed_alignment<=1625 and showBar[bar][4]) or ((zeroed_alignment>=3375 and showBar[bar][5]) or 0xcccccc))
+            zeroed_alignment = alignment+1000
+            bar_colour = ((zeroed_alignment<=650 and showBar[bar][4]) or ((zeroed_alignment>=1350 and showBar[bar][5]) or 0xcccccc))
             if showLabels == 1 then
                if stacked == 1 then
                   WindowText(win, font_id, showBar[bar][1], xpos,  ypos, 0, 0, bar_colour, false)
@@ -296,11 +296,11 @@ function DisplayStatsPage()
             end
             if graphicalMode == 1 then
                WindowLine (win, xpos+label_width+line_height/2, math.ceil(ypos+line_height/2), xpos+label_width+bar_width-line_height/2, math.ceil(ypos+line_height/2), bar_colour, 0+0x0200, 2)
-               WindowCircleOp (win, 1, xpos+label_width+(zeroed_alignment/5000)*(bar_width-line_height), ypos, xpos+label_width+(zeroed_alignment/5000)*(bar_width-line_height)+line_height, ypos+line_height, bar_colour/2, 0, 2, bar_colour, 0)
+               WindowCircleOp (win, 1, xpos+label_width+(zeroed_alignment/2000)*(bar_width-line_height), ypos, xpos+label_width+(zeroed_alignment/2000)*(bar_width-line_height)+line_height, ypos+line_height, bar_colour/2, 0, 2, bar_colour, 0)
 
                -- add ticks at alignment change boundaries
-               local tick_1 = xpos + label_width + (-874 + 2500) / 5000 * (bar_width);
-               local tick_2 = xpos + label_width + (874 + 2500) / 5000 * (bar_width);
+               local tick_1 = xpos + label_width + (-350 + 1000) / 2000 * (bar_width);
+               local tick_2 = xpos + label_width + (350 + 1000) / 2000 * (bar_width);
                WindowLine (win, tick_1, ypos, tick_1, ypos+line_height, bar_colour, 0+0x0200, 2)
                WindowLine (win, tick_2, ypos, tick_2, ypos+line_height, bar_colour, 0+0x0200, 2)
             else
