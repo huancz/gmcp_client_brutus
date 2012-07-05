@@ -1,10 +1,10 @@
 local BLACK = 1
 local RED = 2
-local GREEN = 3  
-local YELLOW = 4 
-local BLUE = 5 
-local MAGENTA = 6 
-local CYAN = 7 
+local GREEN = 3
+local YELLOW = 4
+local BLUE = 5
+local MAGENTA = 6
+local CYAN = 7
 local WHITE = 8
 local DEFAULT_COLOUR = "@w"
 
@@ -27,27 +27,27 @@ conversion_colours = {
    [GetBoldColour   (CYAN)]    = "@C",
    [GetBoldColour   (WHITE)]   = "@W",
 }  -- end conversion table
-  
+
 -- This table uses the colours as defined in the MUSHclient ANSI tab, however the
 -- defaults are shown on the right if you prefer to use those.
 
 -- map from aardwolf color codes to color values
 colour_conversion = {
-   k = GetNormalColour (BLACK)   ,   -- 0x000000 
-   r = GetNormalColour (RED)     ,   -- 0x000080 
-   g = GetNormalColour (GREEN)   ,   -- 0x008000 
-   y = GetNormalColour (YELLOW)  ,   -- 0x008080 
-   b = GetNormalColour (BLUE)    ,   -- 0x800000 
-   m = GetNormalColour (MAGENTA) ,   -- 0x800080 
-   c = GetNormalColour (CYAN)    ,   -- 0x808000 
-   w = GetNormalColour (WHITE)   ,   -- 0xC0C0C0 
-   D = GetBoldColour   (BLACK)   ,   -- 0x808080 
-   R = GetBoldColour   (RED)     ,   -- 0x0000FF 
-   G = GetBoldColour   (GREEN)   ,   -- 0x00FF00 
-   Y = GetBoldColour   (YELLOW)  ,   -- 0x00FFFF 
-   B = GetBoldColour   (BLUE)    ,   -- 0xFF0000 
-   M = GetBoldColour   (MAGENTA) ,   -- 0xFF00FF 
-   C = GetBoldColour   (CYAN)    ,   -- 0xFFFF00 
+   k = GetNormalColour (BLACK)   ,   -- 0x000000
+   r = GetNormalColour (RED)     ,   -- 0x000080
+   g = GetNormalColour (GREEN)   ,   -- 0x008000
+   y = GetNormalColour (YELLOW)  ,   -- 0x008080
+   b = GetNormalColour (BLUE)    ,   -- 0x800000
+   m = GetNormalColour (MAGENTA) ,   -- 0x800080
+   c = GetNormalColour (CYAN)    ,   -- 0x808000
+   w = GetNormalColour (WHITE)   ,   -- 0xC0C0C0
+   D = GetBoldColour   (BLACK)   ,   -- 0x808080
+   R = GetBoldColour   (RED)     ,   -- 0x0000FF
+   G = GetBoldColour   (GREEN)   ,   -- 0x00FF00
+   Y = GetBoldColour   (YELLOW)  ,   -- 0x00FFFF
+   B = GetBoldColour   (BLUE)    ,   -- 0xFF0000
+   M = GetBoldColour   (MAGENTA) ,   -- 0xFF00FF
+   C = GetBoldColour   (CYAN)    ,   -- 0xFFFF00
    W = GetBoldColour   (WHITE)   ,   -- 0xFFFFFF
 }  -- end conversion table
 
@@ -85,7 +85,7 @@ end
 function StylesToColoursOneLine (styles, startcol, endcol)
    local startcol = startcol or 1
    local endcol = endcol or 99999 -- 99999 is assumed to be long enough to cover ANY style run
-   
+
    -- negative column indices are used to measure back from the end
    if startcol < 0 or endcol < 0 then
       local total_chars = 0
@@ -106,7 +106,7 @@ function StylesToColoursOneLine (styles, startcol, endcol)
    end
 
    local copystring = ""
-   
+
    -- skip unused style runs at the start
    local style_start = 0
    local first_style = 0
@@ -119,31 +119,31 @@ function StylesToColoursOneLine (styles, startcol, endcol)
       end
       style_start = style_start+v.length
    end
-      
+
    -- startcol larger than the sum length of all styles? return empty string
-   if first_style == 0 then 
-      return copystring 
+   if first_style == 0 then
+      return copystring
    end
-   
+
    for i = first_style,#styles do
       local v = styles[i]
       local text = string.sub(v.text, startcol, endcol - style_start)
 
       -- fixup string: change @ to @@ and ~ to @-
       text = string.gsub(string.gsub(text, "@", "@@"),"~", "@-")
-      
+
       local code = conversion_colours[v.textcolour]
       if code then
          copystring = copystring..code..text
       else
          copystring = copystring..text
       end
-      
+
       -- stopping here before the end?
       if endcol <= style_start + v.length then
          break
       end
-      
+
       -- all styles after the first one have startcol of 1
       startcol = 1
       style_start = style_start + v.length
@@ -163,7 +163,7 @@ function ColoursToStyles (Text)
       Text = Text:gsub ("@x2[6-9]%d","") -- strip invalid xterm codes (260+)
       Text = Text:gsub ("@x25[6-9]","") -- strip invalid xterm codes (256+)
       Text = Text:gsub ("@[^xcmyrgbwCMYRGBWD]", "")  -- rip out hidden garbage
-      
+
       -- make sure we start with @ or gsub doesn't work properly
       if Text:sub (1, 1) ~= "@" then
          Text = DEFAULT_COLOUR .. Text
@@ -176,10 +176,10 @@ function ColoursToStyles (Text)
             code,text = text:match("(%d%d?%d?)(.*)")
             colour = colour..code
          end
-           
+
          if #text > 0 then
-            table.insert (astyles, { text = text, 
-               length = #text, 
+            table.insert (astyles, { text = text,
+               length = #text,
                textcolour = colour_conversion [colour] or GetNormalColour (WHITE),
                backcolour = GetNormalColour (BLACK) })
          end -- if some text
@@ -189,8 +189,8 @@ function ColoursToStyles (Text)
    end -- if any colour codes at all
 
    -- No colour codes, create a single style.
-   return { { text = Text, 
-      length = #Text, 
+   return { { text = Text,
+      length = #Text,
       textcolour = GetNormalColour (WHITE),
       backcolour = GetNormalColour (BLACK) } }
 end  -- function ColoursToStyles

@@ -32,7 +32,7 @@ Then next time, if only HP and Mana have changed, receive:
    char.vitals { "hp": 100000, "mana": 85000 }
 
 The previous value for 'moves' will be remembered and available until
-it is refreshed. 
+it is refreshed.
 
 For full details on GMCP in Aardwolf see:
 
@@ -43,9 +43,9 @@ use this plugin, see:
 
    http://www.aardwolf.com/wiki/index.php/Clients/MushclientGMCP
 
-** DISCLAIMER ** 
+** DISCLAIMER **
 ================
-I am not a lua expert. If you look at this code and think 'Wtf why did you do {X} when {Y} would have been so much easier', or '{Y} would 
+I am not a lua expert. If you look at this code and think 'Wtf why did you do {X} when {Y} would have been so much easier', or '{Y} would
 have been a better lua idiom', please do let me know at wolf@aardwolf.com - thanks!
 
 </description>
@@ -105,7 +105,7 @@ function GMCP_Alias(name, line, wildcards)
    if (wildcards[1] ~= nil) then
       Send_GMCP_Packet(wildcards[1]) -- in gmcphelper
    end
-end 
+end
 
 ---------------------------------------------------------------------------------------------------
 -- alternative to gmcpval function, intended to be used from within plugins written
@@ -170,18 +170,18 @@ function OnPluginTelnetSubnegotiation (msg_type, data)
    if msg_type ~= GMCP then
       return
    end -- if not GMCP
-  
+
    if GMCPDebug > 0 then ColourNote ("darkorange", "", data) end
 
    message, params = string.match (data, "([%a.]+)%s+(.*)")
-  
+
    if not message then
       return
    end -- if
-  
+
    if not string.match (params, "^[%[{]") then
       params =  "[" .. params .. "]"  -- JSON hack, make msg first element of an array.
-   end -- if 
+   end -- if
    local succ,t = pcall(json.decode,params)
 
    if succ and type(t) == "table" then
@@ -194,20 +194,20 @@ function OnPluginTelnetSubnegotiation (msg_type, data)
 
          -- reset data hacks
          if (item == "room" and message:sub(1,13) ~= "room.wrongdir") -- don't let room.wrongdir erase current room info
-         or item == "comm" or item == "group" then 
-            parent[item] = nil 
+         or item == "comm" or item == "group" then
+            parent[item] = nil
          end
 
          parent[item] = parent[item] or {}
          parent = parent[item]
       end
- 
+
       parse_gmcp(t,nil,parent)
 
-      if GMCPDebug > 1 then 
-         print ("gmcpdata serialized: " .. serialize.save_simple(gmcpdata)) 
+      if GMCPDebug > 1 then
+         print ("gmcpdata serialized: " .. serialize.save_simple(gmcpdata))
       end
- 
+
       BroadcastPlugin(1,message)
 
       -- Examples of use from here on. Can be uncommented for debug.
@@ -220,11 +220,11 @@ function OnPluginTelnetSubnegotiation (msg_type, data)
       --print("Testing bad lower level inside good: " .. gmcpval("room.info.hinick")) -- nil
       --print("Testing north exit, deeper nest    : " .. gmcpval("room.info.exits.n"))
       -- End of test cases.
- 
+
   else
       ColourNote("white","red","GMCP DATA ERROR: "..t)
   end  -- if
-   
+
 end -- function OnPluginTelnetSubnegotiation
 
 function OnPluginInstall()
@@ -253,9 +253,9 @@ function OnPluginTelnetRequest (msg_type, data)
    if msg_type == GMCP and data == "WILL" then
       return true
    end -- if
-  
+
    if msg_type == GMCP and data == "SENT_DO" then
-      Note ("Enabling GMCP.") 
+      Note ("Enabling GMCP.")
       -- This hard-coded block may need to be made into a config table as we add more message types.
       Send_GMCP_Packet (string.format ('Core.Hello { "client": "MUSHclient", "version": "%s" }', Version().." "..PackageVersion()))
       Send_GMCP_Packet ('Core.Supports.Set [ "Char 1", "Comm 1", "Room 1" ]')
@@ -284,7 +284,7 @@ end
 ---------------------------------------------------------------------------------------------------
 -- FUNCTION:: init_gmcpdata
 --    Performs 2 functions:
---       1. Define a table of tags we support, including refreshed tags (clear each time) and 
+--       1. Define a table of tags we support, including refreshed tags (clear each time) and
 --          regular tags.
 --       2. Initialize gmcpdata to have empty tables nested at these levels.
 ---------------------------------------------------------------------------------------------------
@@ -294,10 +294,10 @@ end -- init_gmcpdata
 
 ---------------------------------------------------------------------------------------------------
 -- FUNCTION:: parse_gmcp
---   Receives a set of JSON data and a parent to store its table into. Will recursively call 
+--   Receives a set of JSON data and a parent to store its table into. Will recursively call
 --   itself building up the levels of, for example, gmcpdata.room.info.exits.n as it goes.
 ---------------------------------------------------------------------------------------------------
-function parse_gmcp(t, done, parent) 
+function parse_gmcp(t, done, parent)
 
    assert (t, "nil table passed to parse_gmcp")
    assert (parent, "nil parent passed to parse_gmcp")
@@ -306,7 +306,7 @@ function parse_gmcp(t, done, parent)
 
    local function parseone(val)
       if type (val) == "string" then
-         return val 
+         return val
       elseif type(val) == "function" then
          return nil
       else
@@ -319,7 +319,7 @@ function parse_gmcp(t, done, parent)
    for key, value in pairs (t) do
 
       if type (value) == "table" and not done [value] then
-         parent[key] = parent[key] or { }       
+         parent[key] = parent[key] or { }
          done [value] = true
          parse_gmcp(value, done, parent[key])
       else

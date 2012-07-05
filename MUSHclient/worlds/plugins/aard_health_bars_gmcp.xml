@@ -71,9 +71,9 @@ thresh1color = tonumber (GetVariable("thresh1color")) or 0x00ffff
 thresh2color = tonumber (GetVariable("thresh2color")) or 0x0000ff
 
 -- Variables not saved.
-startx     = ""  
+startx     = ""
 starty     = ""
-posx       = "" 
+posx       = ""
 posy       = ""
 hotspot_id = ""
 page_built = false
@@ -169,7 +169,7 @@ function DoNextSimpleBar(bar, val, maxval, flip, stacked_label, unstacked_label)
       else
          xpos = xpos + (((stacked == 0) and 1) or 0)*WindowText(win, font_id, " ["..txt.."]", xpos+label_width, ypos, 0, 0, showBar[bar][4], false)
       end
-      
+
       if stacked == 1 then
          ypos = ypos + line_height + 1
       else
@@ -180,7 +180,7 @@ end
 
 function DisplayStatsPage()
 
-   WindowRectOp(win, 2, 2,2,-2,-2,background_colour) -- blank 
+   WindowRectOp(win, 2, 2,2,-2,-2,background_colour) -- blank
 
    if not page_built then
       local txt = "Status bars will appear here"
@@ -220,13 +220,13 @@ function DisplayStatsPage()
             bar_width = math.max(1, (width-LEFT_MARGIN)/numBars-LEFT_MARGIN)
          end
       end
-      
+
       DoNextSimpleBar("Health", gmcpval("vitals.hp") or "", gmcpval("maxstats.maxhp") or "")
-      
+
       DoNextSimpleBar("Mana", gmcpval("vitals.mana") or "", gmcpval("maxstats.maxmana") or "")
-      
+
       DoNextSimpleBar("Moves", gmcpval("vitals.moves") or "", gmcpval("maxstats.maxmoves") or "")
-      
+
       local tnl = gmcpval("status.tnl") or ""
       local perlevel = gmcpval("base.perlevel") or ""
       -- switch from "to next level" to "current level experience"
@@ -235,7 +235,7 @@ function DisplayStatsPage()
       else
          DoNextSimpleBar("TNL", tnl, perlevel, true, "Exp   :", "Exp:")
       end
-      
+
       bar = "Enemy"
       if (showBar[bar][2] == true) then
          fighting = gmcpval("status.enemy")
@@ -269,10 +269,10 @@ function DisplayStatsPage()
                end
             end
             if graphicalMode == 1 then
-               gauge(win,showBar[bar][3],tonumber(0),100,xpos+label_width,ypos,bar_width,line_height,0x444444,0x000000,num_ticks,0x000000,0x222222,nil,flat_gauges==1) 
+               gauge(win,showBar[bar][3],tonumber(0),100,xpos+label_width,ypos,bar_width,line_height,0x444444,0x000000,num_ticks,0x000000,0x222222,nil,flat_gauges==1)
             else
                xpos = xpos + (((stacked == 0) and 1) or 0)*WindowText(win, font_id, " [    ]", xpos+label_width, ypos, 0, 0, 0x444444, false)
-            end            
+            end
          end
          if stacked == 1 then
             ypos = ypos + line_height + 1
@@ -280,7 +280,7 @@ function DisplayStatsPage()
             xpos = xpos+(graphicalMode*bar_width)+LEFT_MARGIN
          end
       end
-      
+
       bar = "Align"
       if (showBar[bar][2] == true) then
          alignment = tonumber(gmcpval("status.align"))
@@ -376,7 +376,7 @@ function right_click_menu ()
             stacked = 0
             height = line_height+(TOP_MARGIN*2)
          else
-            stacked = 1   
+            stacked = 1
             height = ((line_height+1)*numBars)+(TOP_MARGIN*2)
          end
       elseif numResult >= 4 and numResult <= 9 then
@@ -443,7 +443,7 @@ function right_click_menu ()
          CallPlugin("462b665ecb569efbf261422f","boostMe", win)
       elseif numResult == 36 then
          -- send to back
-         CallPlugin("462b665ecb569efbf261422f","dropMe", win) 
+         CallPlugin("462b665ecb569efbf261422f","dropMe", win)
       elseif numResult == 37 then
          -- reduce size
          font_name = default_font_name
@@ -456,7 +456,7 @@ function right_click_menu ()
          reverseTNL = 1
          showBar = defaultShowBar
       end -- if
-      
+
       OnPluginSaveState()
       OnPluginInstall()
    end
@@ -472,7 +472,7 @@ function OnPluginBroadcast (msg, id, name, text)
    if (id == '3e7dedbe37e44942dd46d264') then
       if (text == 'reload') then
          -- invalidate current data
-         page_built = false 
+         page_built = false
          return
       end
 
@@ -513,7 +513,7 @@ function ResizeMoveCallback()
    elseif (windowinfo.window_left+width > GetInfo(281)) then
       width = GetInfo(281)-windowinfo.window_left
       startx = GetInfo(281)
-   end 
+   end
 
    if (utils.timer() - lastRefresh > 0.0333) then
       SetUpHotspotsAndDraw(false)
@@ -567,7 +567,7 @@ end
 -- Called when plugin is saved - store our variables for next time.
 ---------------------------------------------------------------------------------
 function OnPluginSaveState ()
-   -- save window current location for next time  
+   -- save window current location for next time
    movewindow.save_state (win)
    barTexts = ""
    numBars = 0
@@ -635,7 +635,7 @@ end
 function OnPluginInstall()
    background_colour = tonumber (GetVariable ("background_colour")) or background_colour
    -- make window so I can grab the font info
-   WindowCreate (win, 600, 600, 1, 1, 0, 0, background_colour) 
+   WindowCreate (win, 600, 600, 1, 1, 0, 0, background_colour)
 
    font_id = "statmon_font"
 
@@ -712,7 +712,7 @@ function OnPluginInstall()
       check (EnablePlugin(GetPluginID (), false))
       return
    end -- they didn't enable us last time
-   
+
    OnPluginSaveState()
    installed = true
 end
@@ -724,13 +724,13 @@ end
 --=================================================================================
 function SetUpHotspotsAndDraw(firstTime)
    if (firstTime == true) then
-      check (WindowCreate (win, 
+      check (WindowCreate (win,
             windowinfo.window_left, windowinfo.window_top,   -- left, top (auto-positions)
             width,     -- width
             height,  -- height
             windowinfo.window_mode,       -- auto-position: middle right
             windowinfo.window_flags,  -- flags
-            background_colour) )                
+            background_colour) )
       -- Add handler for resizing
       WindowAddHotspot(win, "resize", width-RESIZE_TAG_SIZE, height-RESIZE_TAG_SIZE, width, height, "MouseOver", "CancelMouseOver", "MouseDown", "CancelMouseDown", "MouseUp", "", 6, 0)
       WindowDragHandler(win, "resize", "ResizeMoveCallback", "ResizeReleaseCallback", 0)
@@ -742,21 +742,21 @@ function SetUpHotspotsAndDraw(firstTime)
       WindowResize(win, width, height, background_colour)
       WindowMoveHotspot(win, "resize", width-RESIZE_TAG_SIZE, height-RESIZE_TAG_SIZE, width, height)
    end
-   
+
    -- Add the drag handler so they can move the window around
    movewindow.add_drag_handler (win, 0, 0, 0, 0)
- 
+
    -- draw edge frame.
    WindowRectOp (win, 1, 0, 0, 0, 0, border_color, 15)
    WindowRectOp (win, 1, 1, 1, -1, -1, 0x777777, 15)
-   
+
    DisplayStatsPage()
 end
 
 -------------------------------------------------------------------------------
 --- Calculate width of a line of styled text without drawing it.
 -------------------------------------------------------------------------------
-function styleWidth(styles) 
+function styleWidth(styles)
    local s = ""
    for _,w in ipairs (styles) do
       s = s .. w.text
