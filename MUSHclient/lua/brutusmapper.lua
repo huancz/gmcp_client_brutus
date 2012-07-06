@@ -1476,12 +1476,12 @@ function start_speedwalk (path)
       return
    end -- if
 
-   if myState == 9 or myState == 11 then
-      Send("stand")
-   elseif myState ~= 3 then
-      Note("Cannot run now.")
-      return
-   end
+--    if myState == 9 or myState == 11 then
+--       Send("stand")
+--    elseif myState ~= 3 then
+--       Note("Cannot run now.")
+--       return
+--    end
 
    if current_speedwalk and #current_speedwalk > 0 then
       mapprint ("You are already speedwalking! (Ctrl + LH-click on any room to cancel)")
