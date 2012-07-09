@@ -1238,12 +1238,12 @@ function map_portal (name, line, wildcards)
       return
    end
 
-	local level = tonumber(utils.inputbox ("Please enter the level of this portal, or leave at 0 for the default", "Portal Level", "0", "Courier", 9, {validate=level_check}))
+   local level = tonumber(utils.inputbox ("Please enter the level of this portal, or leave at 0 for the default", "Portal Level", "0", "Courier", 9, {validate=level_check}))
 
-	if not level then
-		Note("Portal creation cancelled.")
-		return
-	end
+   if not level then
+     Note("Portal creation cancelled.")
+     return
+   end
 
    local hhp_room_exists = 0
    local query = ""
@@ -2863,7 +2863,7 @@ function compareTables(primary, secondary)
 end
 
 -- functions for handling Aardwolf color codes
-dofile (GetPluginInfo (GetPluginID(), 20) .. "aardwolf_colors.lua")
+dofile (GetPluginInfo (GetPluginID(), 20) .. "brutus_colors.lua")
 bigmap_override = false
 function override_continents(override)
    if override == "true" then

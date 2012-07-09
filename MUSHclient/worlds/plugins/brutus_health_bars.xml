@@ -79,7 +79,7 @@ hotspot_id = ""
 page_built = false
 
 -- functions for handling Aardwolf color codes
-dofile (GetPluginInfo (GetPluginID(), 20) .. "aardwolf_colors.lua")
+dofile (GetPluginInfo (GetPluginID(), 20) .. "brutus_colors.lua")
 
 string.lpad = function(str, len, char)
    str = tostring(str)
