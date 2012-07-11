@@ -6,26 +6,26 @@ local BLUE = 5
 local MAGENTA = 6
 local CYAN = 7
 local WHITE = 8
-local DEFAULT_COLOUR = "@w"
+local DEFAULT_COLOUR = "&g"
 
 -- map from color values to aardwolf color codes
 conversion_colours = {
-   [GetNormalColour (BLACK)]   = "@x000",
-   [GetNormalColour (RED)]     = "@r",
-   [GetNormalColour (GREEN)]   = "@g",
-   [GetNormalColour (YELLOW)]  = "@y",
-   [GetNormalColour (BLUE)]    = "@b",
-   [GetNormalColour (MAGENTA)] = "@m",
-   [GetNormalColour (CYAN)]    = "@c",
-   [GetNormalColour (WHITE)]   = "@w",
-   [GetBoldColour   (BLACK)]   = "@D", -- gray
-   [GetBoldColour   (RED)]     = "@R",
-   [GetBoldColour   (GREEN)]   = "@G",
-   [GetBoldColour   (YELLOW)]  = "@Y",
-   [GetBoldColour   (BLUE)]    = "@B",
-   [GetBoldColour   (MAGENTA)] = "@M",
-   [GetBoldColour   (CYAN)]    = "@C",
-   [GetBoldColour   (WHITE)]   = "@W",
+   [GetNormalColour (BLACK)]   = "&k",
+   [GetNormalColour (RED)]     = "&r",
+   [GetNormalColour (GREEN)]   = "&g",
+   [GetNormalColour (YELLOW)]  = "&y",
+   [GetNormalColour (BLUE)]    = "&b",
+   [GetNormalColour (MAGENTA)] = "&m",
+   [GetNormalColour (CYAN)]    = "&c",
+   [GetNormalColour (WHITE)]   = "&w",
+   [GetBoldColour   (BLACK)]   = "&K", -- gray
+   [GetBoldColour   (RED)]     = "&R",
+   [GetBoldColour   (GREEN)]   = "&G",
+   [GetBoldColour   (YELLOW)]  = "&Y",
+   [GetBoldColour   (BLUE)]    = "&B",
+   [GetBoldColour   (MAGENTA)] = "&M",
+   [GetBoldColour   (CYAN)]    = "&C",
+   [GetBoldColour   (WHITE)]   = "&W",
 }  -- end conversion table
 
 -- This table uses the colours as defined in the MUSHclient ANSI tab, however the
@@ -41,7 +41,7 @@ colour_conversion = {
    m = GetNormalColour (MAGENTA) ,   -- 0x800080
    c = GetNormalColour (CYAN)    ,   -- 0x808000
    w = GetNormalColour (WHITE)   ,   -- 0xC0C0C0
-   D = GetBoldColour   (BLACK)   ,   -- 0x808080
+   K = GetBoldColour   (BLACK)   ,   -- 0x808080
    R = GetBoldColour   (RED)     ,   -- 0x0000FF
    G = GetBoldColour   (GREEN)   ,   -- 0x00FF00
    Y = GetBoldColour   (YELLOW)  ,   -- 0x00FFFF
@@ -64,7 +64,7 @@ for i = 9,16 do
 end
 for i = 16,255 do
    local xterm_colour = extended_colours[i]
-   conversion_colours[xterm_colour] = (conversion_colours[xterm_colour] or string.format("@x%03d",i))
+   conversion_colours[xterm_colour] = (conversion_colours[xterm_colour] or string.format("&x%03d",i))
    colour_conversion[string.format("x%03d",i)] = xterm_colour
    colour_conversion[string.format("x%d",i)] = xterm_colour
 end
@@ -129,8 +129,8 @@ function StylesToColoursOneLine (styles, startcol, endcol)
       local v = styles[i]
       local text = string.sub(v.text, startcol, endcol - style_start)
 
-      -- fixup string: change @ to @@ and ~ to @-
-      text = string.gsub(string.gsub(text, "@", "@@"),"~", "@-")
+      -- fixup string: change & to &&-
+      text = string.gsub(text, "&", "&&")
 
       local code = conversion_colours[v.textcolour]
       if code then
@@ -153,29 +153,19 @@ end -- StylesToColoursOneLine
 
 -- converts text with colour codes in it into style runs
 function ColoursToStyles (Text)
-   if Text:match ("@") then
+   if Text:match ("&") then
       astyles = {}
 
-      Text = Text:gsub ("@%-", "~") -- fix tildes
-      Text = Text:gsub ("@@", "\0") -- change @@ to 0x00
-      Text = Text:gsub ("@x([^%d])","%1") -- strip invalid xterm codes (non-number)
-      Text = Text:gsub ("@x[3-9]%d%d","") -- strip invalid xterm codes (300+)
-      Text = Text:gsub ("@x2[6-9]%d","") -- strip invalid xterm codes (260+)
-      Text = Text:gsub ("@x25[6-9]","") -- strip invalid xterm codes (256+)
-      Text = Text:gsub ("@[^xcmyrgbwCMYRGBWD]", "")  -- rip out hidden garbage
+      Text = Text:gsub ("&&", "\0") -- change && to 0x00
+      Text = Text:gsub ("&[^cmyrgbwCMYRGBWK]", "")  -- rip out hidden garbage
 
-      -- make sure we start with @ or gsub doesn't work properly
-      if Text:sub (1, 1) ~= "@" then
+      -- make sure we start with & or gsub doesn't work properly
+      if Text:sub (1, 1) ~= "&" then
          Text = DEFAULT_COLOUR .. Text
       end -- if
 
-      for colour, text in Text:gmatch ("@(%a)([^@]+)") do
-         text = text:gsub ("%z", "@") -- put any @ characters back
-
-         if colour == "x" then -- xterm 256 colors
-            code,text = text:match("(%d%d?%d?)(.*)")
-            colour = colour..code
-         end
+      for colour, text in Text:gmatch ("&(%a)([^&]+)") do
+         text = text:gsub ("%z", "&") -- put any & characters back
 
          if #text > 0 then
             table.insert (astyles, { text = text,
@@ -197,12 +187,10 @@ end  -- function ColoursToStyles
 
 -- strip all aardwolf color codes from a string
 function strip_colours (s)
-   s = s:gsub ("@%-", "~")    -- fix tildes
-   s = s:gsub ("@@", "\0")  -- change @@ to 0x00
-   s = s:gsub ("@[^xcmyrgbwCMYRGBWD]", "")  -- rip out hidden garbage
-   s = s:gsub ("@x%d?%d?%d?", "") -- strip xterm color codes
-   s = s:gsub ("@%a([^@]*)", "%1") -- strip normal color codes
-   return (s:gsub ("%z", "@")) -- put @ back
+   s = s:gsub ("&&", "\0")  -- change && to 0x00
+   s = s:gsub ("&[^cmyrgbwCMYRGBWK]", "")  -- rip out hidden garbage
+   s = s:gsub ("&%a([^&]*)", "%1") -- strip normal color codes
+   return (s:gsub ("%z", "&")) -- put & back
 end -- strip_colours
 
 -- also provide the reverse of the extended_colours global table
