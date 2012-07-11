@@ -7,7 +7,7 @@
 
 <muclient>
 <plugin
-   name="Aardwolf_Health_Bars"
+   name="Brutus_Health_Bars"
    author="Fiendish and Lasher"
    id="ef4a86dbc9cd4dd6f4c69385"
    language="Lua"
@@ -19,14 +19,14 @@
 >
 <description trim="y">
 
-Aardwolf GCMP based health bars
+BrutusMUD GCMP based health bars
 
 </description>
 </plugin>
 
 <aliases>
 <alias
-   match="resetaard"
+   match="resetlayout"
    enabled="y"
    sequence="100"
    ignore_case="y"

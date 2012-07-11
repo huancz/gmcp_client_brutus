@@ -16,11 +16,11 @@
 
 <muclient>
 <plugin
-   name="Aardwolf_GMCP_Mapper"
+   name="Brutus_GMCP_Mapper"
    author="Multiple"
    id="b6eae87ccedd84f510b74714"
    language="Lua"
-   purpose="Draws GMCP map for Aardwolf"
+   purpose="Draws GMCP map for BRUTUSmud"
    date_written="2010-09-01 16:37:14"
    requires="4.73"
    version="2.0"
@@ -122,7 +122,7 @@ LH-click on the "*" button on the upper-left corner for configuration settings.
 </alias>
 
 <alias
-   match="resetaard"
+   match="resetlayout"
    enabled="y"
    sequence="100"
    ignore_case="y"

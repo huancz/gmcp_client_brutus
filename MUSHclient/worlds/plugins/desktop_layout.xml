@@ -12,7 +12,7 @@
    author="Fiendish and Lasher"
    id="c293f9e7f04dde889f65cb90"
    language="Lua"
-   purpose="Layout Aardwolf Main Screen"
+   purpose="Float mud output window and make it adjustable"
    date_written="2010-08-27 18:32:06"
    requires="4.56"
    version="1.0"
@@ -24,7 +24,7 @@
 
 <alias
    script="LayoutLock"
-   match="^aard layout( lock| unlock)?"
+   match="^layout( lock| unlock)?"
    regexp="y"
    enabled="y"
    sequence="100"
@@ -41,7 +41,7 @@
 
 <alias
    script="reset_aard"
-   match="resetaard"
+   match="resetlayout"
    enabled="y"
    sequence="100"
    ignore_case="y"
@@ -247,17 +247,6 @@ function OnPluginInstall()
 
    WindowCreate (bgwin, 0, 0, 0, 0, 12, 3, GetNormalColour(1))
    WindowCreate (bgoffscreen, 0, 0, 0, 0, 12, 3, GetNormalColour(1))
-
-   local logopath = dir .. "worlds\\plugins\\images\\aardbg13.png"
-   if WindowLoadImage (bgoffscreen, "wolf_logo", logopath) == 0 then
-      WindowResize (bgoffscreen, WindowImageInfo(bgoffscreen, "wolf_logo", 2), WindowImageInfo(bgoffscreen, "wolf_logo", 3), GetNormalColour(1))
-      WindowDrawImage (bgoffscreen, "wolf_logo", 0, 0, 0, 0, miniwin.image_copy)
-      WindowFilter (bgoffscreen, 0, 0, 0, 0, miniwin.filter_red_brightness, bit.band(GetNormalColour(1), 0xFF))
-      WindowFilter (bgoffscreen, 0, 0, 0, 0, miniwin.filter_green_brightness, bit.band(bit.shr(GetNormalColour(1),8), 0xFF))
-      WindowFilter (bgoffscreen, 0, 0, 0, 0, miniwin.filter_blue_brightness, bit.band(bit.shr(GetNormalColour(1),16), 0xFF))
-      WindowImageFromWindow(bgwin, "wolf_logo", bgoffscreen)
-      image_ratio = WindowImageInfo(bgwin, "wolf_logo", 2)/WindowImageInfo(bgwin, "wolf_logo", 3)
-   end
 
    --- Pull some state variables.
    check_main_background()
