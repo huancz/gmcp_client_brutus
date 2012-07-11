@@ -59,9 +59,18 @@ local showLabels = 1
 local reverseTNL = 1
 graphicalMode = tonumber(GetVariable("graphicalMode") or 1)
 local numBars = 6
-local defaultShowBar = {Health={"Health:",true,"Health:",0x00ff00,0x004400}, Mana={"Mana  :",true,"Mana:",0xff5500,0x442200}, Moves={"Moves :",true,"Moves:",0x00ffff,0x004444}, TNL={"TNL   :",true,"TNL:",0xffffff,0x444444}, Enemy={"Enemy :",true,"Enemy:",0x0000ff,0x000044}, Align={"Align :",true, "Alignment:",0x0000ff,0x00ffff}}
+local defaultShowBar = {
+  Health={"Health:",true,"Health:",0x00ff00,0x004400}
+, Mana={"Mana  :",true,"Mana:",0xff5500,0x442200}
+, Moves={"Moves :",true,"Moves:",0x00ffff,0x004444}
+-- , TNL={"TNL   :",true,"TNL:",0xffffff,0x444444}
+, Enemy={"Enemy :",true,"Enemy:",0x0000ff,0x000044}
+, Align={"Align :",true, "Alignment:",0x0000ff,0x00ffff}
+}
 showBar = defaultShowBar
-local barIndex = {"Health", "Mana", "Moves", "TNL", "Enemy", "Align"}
+local barIndex = {"Health", "Mana", "Moves",
+-- "TNL",
+"Enemy", "Align"}
 
 thresh1active = tonumber (GetVariable("thresh1active")) or 0
 thresh2active = tonumber (GetVariable("thresh2active")) or 0
@@ -227,14 +236,14 @@ function DisplayStatsPage()
 
       DoNextSimpleBar("Moves", gmcpval("vitals.moves") or "", gmcpval("maxstats.maxmoves") or "")
 
-      local tnl = gmcpval("status.tnl") or ""
-      local perlevel = gmcpval("base.perlevel") or ""
+      -- local tnl = gmcpval("status.tnl") or ""
+      -- local perlevel = gmcpval("base.perlevel") or ""
       -- switch from "to next level" to "current level experience"
-      if (reverseTNL == 0) then
-         DoNextSimpleBar("TNL", tnl, perlevel)
-      else
-         DoNextSimpleBar("TNL", tnl, perlevel, true, "Exp   :", "Exp:")
-      end
+      -- if (reverseTNL == 0) then
+      --    DoNextSimpleBar("TNL", tnl, perlevel)
+      -- else
+      --    DoNextSimpleBar("TNL", tnl, perlevel, true, "Exp   :", "Exp:")
+      -- end
 
       bar = "Enemy"
       if (showBar[bar][2] == true) then
@@ -352,7 +361,8 @@ function right_click_menu ()
    menustring = menustring .. ">Activate/De-activate|"..activeBars.."<|"
    menustring = menustring .. ">Configure Colors|>Health|Main|Border|<|>Mana|Main|Border|<|>Moves|Main|Border|<|>TNL|Main|Border|<|>Enemy|Main|Border|<|>Align|Evil|Good|<|<|"
    menustring = menustring .. ">HP Thresholds|>First|"..(((thresh1active == 1) and "+") or "").."Activate|Set Percent ("..thresh1percent.."%)|Set Color ("..RGBColourToName(thresh1color)..")|<|>Second|"..(((thresh2active == 1) and "+") or "").."Activate|Set Percent ("..thresh2percent.."%)|Set Color ("..RGBColourToName(thresh2color)..")|<|<|"
-   menustring = menustring .. ((reverseTNL==1 and "+") or "").."Reverse TNL|-|"..((graphicalMode==0 and "+") or "").."Text Mode|"..((flat_gauges==1 and "+") or "").."Use Flat Gauges|>Overlay Numbers|"..((overlay_numbers==0 and "+") or "").."None|"..((overlay_numbers==1 and "+") or "").."Standard|"..((overlay_numbers==2 and "+") or "").."Percentages|"..((overlay_numbers==3 and "+") or "").."Standard+Percentages|<|-|Bring To Front|Send To Back|-|>(In case of emergency)|Reduce Size|<|"
+   -- menustring = menustring .. ((reverseTNL==1 and "+") or "").."Reverse TNL|-|"
+   menustring = menustring ..((graphicalMode==0 and "+") or "").."Text Mode|"..((flat_gauges==1 and "+") or "").."Use Flat Gauges|>Overlay Numbers|"..((overlay_numbers==0 and "+") or "").."None|"..((overlay_numbers==1 and "+") or "").."Standard|"..((overlay_numbers==2 and "+") or "").."Percentages|"..((overlay_numbers==3 and "+") or "").."Standard+Percentages|<|-|Bring To Front|Send To Back|-|>(In case of emergency)|Reduce Size|<|"
 
    result = WindowMenu (win,
       WindowInfo (win, 14),  -- x position
@@ -422,29 +432,29 @@ function right_click_menu ()
          if newcolor ~= -1 then
             thresh2color = newColor
          end
-      elseif numResult == 28 then
+      -- elseif numResult == 28 then
          -- reverse tnl
-         reverseTNL = (((reverseTNL == 0) and 1) or 0)
-      elseif numResult == 29 then
+         -- reverseTNL = (((reverseTNL == 0) and 1) or 0)
+      elseif numResult == 28 then
          -- text mode
          graphicalMode = (((graphicalMode == 0) and 1) or 0)
-      elseif numResult == 30 then
+      elseif numResult == 29 then
          flat_gauges = (((flat_gauges == 0) and 1) or 0)
-      elseif numResult == 31 then
+      elseif numResult == 30 then
          overlay_numbers = 0
-      elseif numResult == 32 then
+      elseif numResult == 31 then
          overlay_numbers = 1
-      elseif numResult == 33 then
+      elseif numResult == 32 then
          overlay_numbers = 2
-      elseif numResult == 34 then
+      elseif numResult == 33 then
          overlay_numbers = 3
-      elseif numResult == 35 then
+      elseif numResult == 34 then
          -- bring to front
          CallPlugin("462b665ecb569efbf261422f","boostMe", win)
-      elseif numResult == 36 then
+      elseif numResult == 35 then
          -- send to back
          CallPlugin("462b665ecb569efbf261422f","dropMe", win)
-      elseif numResult == 37 then
+      elseif numResult == 36 then
          -- reduce size
          font_name = default_font_name
          font_size = default_font_size
