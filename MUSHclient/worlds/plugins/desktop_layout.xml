@@ -8,7 +8,7 @@
 <muclient>
 
 <plugin
-   name="Aardwolf_Main_Layout"
+   name="desktop_layout"
    author="Fiendish and Lasher"
    id="c293f9e7f04dde889f65cb90"
    language="Lua"

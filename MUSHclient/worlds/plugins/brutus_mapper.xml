@@ -16,7 +16,7 @@
 
 <muclient>
 <plugin
-   name="Brutus_GMCP_Mapper"
+   name="brutus_mapper"
    author="Multiple"
    id="b6eae87ccedd84f510b74714"
    language="Lua"
@@ -3915,9 +3915,9 @@ end
 
 require "checkplugin"
 function OnPluginListChanged ()
-   do_plugin_check_now ("abc1a0944ae4af7586ce88dc", "aard_repaint_buffer") -- check we have the repaint buffer plugin
-   do_plugin_check_now ("3e7dedbe37e44942dd46d264", "aard_GMCP_handler")    -- check we have GMCP plugin
-   do_plugin_check_now ("462b665ecb569efbf261422f", "aard_miniwindow_z_order_monitor") -- check we have z order plugin
+   do_plugin_check_now ("abc1a0944ae4af7586ce88dc", "support_repaint_buffer") -- check we have the repaint buffer plugin
+   do_plugin_check_now ("3e7dedbe37e44942dd46d264", "support_GMCP_handler")    -- check we have GMCP plugin
+   do_plugin_check_now ("462b665ecb569efbf261422f", "support_miniwin_z_order_monitor") -- check we have z order plugin
 end -- OnPluginListChanged
 
 function nilToStr(n)

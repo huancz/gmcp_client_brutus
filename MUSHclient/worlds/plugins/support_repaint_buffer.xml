@@ -5,7 +5,7 @@
 
 <muclient>
 <plugin
-   name="Repaint_Buffer"
+   name="support_Repaint_Buffer"
    author="Fiendish"
    id="abc1a0944ae4af7586ce88dc"
    language="Lua"

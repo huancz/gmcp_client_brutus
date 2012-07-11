@@ -7,7 +7,7 @@
 <muclient>
 
 <plugin
-   name="GMCP_handler"
+   name="support_GMCP_handler"
    author="Lasher"
    id="3e7dedbe37e44942dd46d264"
    language="Lua"
