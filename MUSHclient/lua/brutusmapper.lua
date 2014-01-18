@@ -720,7 +720,7 @@ local function changed_room (uid)
                " to " .. walk_to_room_name ..
                ". Speedwalks to go: " .. #current_speedwalk + 1)
             expected_room = dir.uid
-            Send (dir.dir)
+            Execute (dir.dir)
          else
             last_hyperlink_uid = nil
             last_speedwalk_uid = nil
@@ -1514,7 +1514,7 @@ function start_speedwalk (path)
          SetStatus ("Walking " .. (expand_direction [dir.dir] or dir.dir) ..
             " to " .. walk_to_room_name ..
             ". Speedwalks to go: " .. #current_speedwalk + 1)
-         Send (dir.dir)
+         Execute (dir.dir)
          expected_room = dir.uid
       else
          cancel_speedwalk ()
