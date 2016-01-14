@@ -33,7 +33,16 @@
   <trigger
    enabled="y"
    keep_evaluating="y"
-   match="*SpNCP*"
+   match="^\s*\d+\. SpNCP \[.*"
+   omit_from_output="y"
+   regexp="y"
+   sequence="1"
+   />
+  <trigger
+   enabled="y"
+   keep_evaluating="y"
+   match="^\s*\d+\. jgbr \[.*"
+   regexp="y"
    omit_from_output="y"
    sequence="1"
    />
@@ -56,6 +65,9 @@ require "serialize"
 
 local GR_LIST_PRIORITY = 1
 
+local PLIST_RX = rex.new("^\\s*\\d+\\. SpNCP \\[.*")
+local DLIST_RX = rex.new("^\\s*\\d+\\. jgbr \\[.*")
+
 function cleanup()
   CallPlugin('b3a9c0bdeef9394ff401358a', 'clear_item', 'grouplist');
 end
@@ -67,13 +79,20 @@ function group_info(name, wildcard, output)
       while true do
          local line, wildcards, styles = wait.match ("*", nil, trigger_flag.KeepEvaluating)
 
-         -- see if end of group list
-         if not string.match (line, "^(.*)SpNCP(.*)$") then
-            break
+         -- 1. SpNCP [ 100%H  100%M  100%V] [ R4 Pr Pix] charname (Head)
+         -- 1. jgbr [ 100%H  100%M  100%V] [ R4 Pr Pix] charname (Head)
+
+         local dummy, dummy2, match = PLIST_RX:match(line)
+         if match ~= nil then
+            table.insert (grouplist, styles)
+         end
+         local dummy, dummy2, match = DLIST_RX:match(line)
+         if match ~= nil then
+            table.insert (grouplist, styles)
          end
 
-         -- save group list line
-         table.insert (grouplist, styles)
+         -- no match -> normal mud output resumes
+         break
       end
 
       CallPlugin('b3a9c0bdeef9394ff401358a', 'update_item', 'grouplist', serialize.save_simple(
