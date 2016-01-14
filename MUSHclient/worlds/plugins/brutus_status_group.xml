@@ -82,17 +82,21 @@ function group_info(name, wildcard, output)
          -- 1. SpNCP [ 100%H  100%M  100%V] [ R4 Pr Pix] charname (Head)
          -- 1. jgbr [ 100%H  100%M  100%V] [ R4 Pr Pix] charname (Head)
 
+         local found = 0
          local dummy, dummy2, match = PLIST_RX:match(line)
          if match ~= nil then
             table.insert (grouplist, styles)
+            found = 1
          end
          local dummy, dummy2, match = DLIST_RX:match(line)
          if match ~= nil then
             table.insert (grouplist, styles)
+            found = 1
          end
-
-         -- no match -> normal mud output resumes
-         break
+         if (found <= 0) then
+            -- no match -> normal mud output resumes
+            break
+         end
       end
 
       CallPlugin('b3a9c0bdeef9394ff401358a', 'update_item', 'grouplist', serialize.save_simple(
