@@ -71,7 +71,7 @@ local AFF_WATCHLIST = {
 }
 
 local AFF_SPELL_RX  = rex.new("^(?:SPL|SKL): \\(\\s*\\d+[a-z]+\\) ([a-z ]*).*")
-local AFF_AFFECT_RX = rex.new("^(?:SPL|SKL): \\(\\s*\\d+[a-z]+\\) [a-z ]*([A-Z-]+)\s*$")
+local AFF_AFFECT_RX = rex.new("^(?:SPL|SKL): \\(\\s*\\d+[a-z]+\\) [a-z ]*([A-Z-]+)\\s*$")
 
 function aff_info(name, wildcard, output)
   local afflist = {}
