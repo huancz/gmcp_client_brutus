@@ -2384,7 +2384,8 @@ function checkDatabaseIntegrity()
    local integrityCheck = true
    for row in db:nrows("PRAGMA quick_check;") do
       tprint(row)
-      if row.integrity_check ~= "ok" then
+      -- older sqlite returns "integrity_check" column, newer "quick_check" - we must check both to stay compatible
+      if row.quick_check ~= "ok" and row.integrity_check ~= "ok" then
          integrityCheck = false
       end
    end
